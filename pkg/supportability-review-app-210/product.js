@@ -1,9 +1,8 @@
-import { IPlugin } from '@shell/core/types';
-import { STATE, NAME as NAME_COL, AGE, NAMESPACE as NAMESPACE_COL } from '@shell/config/table-headers';
-import { SUPPORTABILITY_REVIEW_PRODUCT_NAME, SUPPORTABILITY_REVIEW_CRD_IDS, SR_APP_PAGES } from './config/types';
-import { rootRoute, createRoute } from './utils/custom-routing';
+import { STATE, NAME as NAME_COL, AGE, NAMESPACE as NAMESPACE_COL } from '@shell/config/table-headers'
+import { SUPPORTABILITY_REVIEW_PRODUCT_NAME, SUPPORTABILITY_REVIEW_CRD_IDS, SR_APP_PAGES } from './config/types'
+import { rootRoute, createRoute } from './utils/custom-routing'
 
-export function init($plugin: IPlugin, store: any) {
+export function init($plugin, store) {
   const { product, configureType, virtualType, basicType, headers } = $plugin.DSL(
     store,
     SUPPORTABILITY_REVIEW_PRODUCT_NAME
