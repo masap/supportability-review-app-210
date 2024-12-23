@@ -1,0 +1,2 @@
+"use strict";(("undefined"!==typeof self?self:this)["webpackChunksupportability_review_app_210_0_1_0"]=("undefined"!==typeof self?self:this)["webpackChunksupportability_review_app_210_0_1_0"]||[]).push([[332],{57086:function(e,n,t){t.r(n),t.d(n,{default:function(){return p}});var i=t(9274);function r(e,n,t,r,u,l){return(0,i.openBlock)(),(0,i.createElementBlock)("h1",null,"DetailView")}var u={name:"ReviewBundleDetailView"},l=t(47433);const a=(0,l.A)(u,[["render",r]]);var p=a}}]);
+//# sourceMappingURL=supportability-review-app-210-0.1.0.umd.min.detail.js.map
