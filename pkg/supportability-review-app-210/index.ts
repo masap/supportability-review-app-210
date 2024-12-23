@@ -1,6 +1,7 @@
 import { importTypes } from '@rancher/auto-import';
 import { IPlugin } from '@shell/core/types';
-import extensionRouting from './routing/extension-routing';
+import extensionRouting from './routing/sr-routing';
+import srStore from './store';
 
 // Init the package
 export default function(plugin: IPlugin): void {
@@ -12,6 +13,9 @@ export default function(plugin: IPlugin): void {
 
   // Load a product
   plugin.addProduct(require('./product'));
+
+  // Add Vuex store
+  plugin.addDashboardStore(srStore.config.namespace, srStore.specifics, srStore.config);
 
   // Add Vue Routes
   plugin.addRoutes(extensionRouting);
