@@ -50,21 +50,76 @@ export default {
 
   methods: {
     fetchReport() {
-      const id = this.$route.params.id
-      const reportJSON = this.$route.query.report
-      let reportData
+      const name = this.$route.query.bundlename
+      const hostname = window.location.host
+      const path =
+        'https://' +
+        hostname +
+        '/k8s/clusters/local/api/v1/namespaces/sr-operator-system/services/http:sr-bundle-app-frontend-service:80/proxy/' +
+        '?key=' +
+        name +
+        '&type=data'
+      fetch(path)
+        .then((response) => response.json())
+        .then((reportData) => {
+          const report_data = {
+            clusterData: [
+              { type: 'aks', count: 0 },
+              { type: 'eks', count: 0 },
+              { type: 'gke', count: 0 },
+              { type: 'harvester', count: 0 },
+              { type: 'k3s', count: 0 },
+              { type: 'rke', count: 0 },
+              { type: 'rke2', count: 0 }
+            ],
+            summaryData: {
+              checks_total: 0,
+              checks_fail: 0,
+              checks_warn: 0,
+              checks_skip: 0,
+              checks_pass: 0
+            },
+            vectorData: {}
+          }
 
-      if (reportJSON) {
-        try {
-          const decodedData = atob(decodeURIComponent(reportJSON))
-          reportData = JSON.parse(decodedData)
-          this.clusterData = reportData.clusterData || []
-          this.summaryData = reportData.summaryData || {}
-          this.vectorData = new Map(Object.entries(reportData.vectorData || {}))
-        } catch (error) {
-          console.error('Error decoding or parsing report JSON:', error)
-        }
-      }
+          reportData.clusters.forEach((cluster) => {
+            const typeIndex = report_data.clusterData.findIndex((c) => c.type === cluster.kubernetes_distro)
+            if (typeIndex !== -1) {
+              report_data.clusterData[typeIndex].count++
+            }
+            report_data.summaryData.checks_total += cluster.checks_total
+            report_data.summaryData.checks_fail += cluster.checks_fail
+            report_data.summaryData.checks_warn += cluster.checks_warn
+            report_data.summaryData.checks_skip += cluster.checks_skip
+            report_data.summaryData.checks_pass += cluster.checks_pass
+            cluster.groups.forEach((group) => {
+              group.checks.forEach((check) => {
+                if (!report_data.vectorData[check.vector]) {
+                  report_data.vectorData[check.vector] = {
+                    checks_total: 0,
+                    checks_pass: 0,
+                    checks_fail: 0,
+                    checks_warn: 0,
+                    checks_skip: 0
+                  }
+                }
+                report_data.vectorData[check.vector].checks_pass += check.state === 'pass'
+                report_data.vectorData[check.vector].checks_fail += check.state === 'fail'
+                report_data.vectorData[check.vector].checks_skip += check.state === 'skip'
+                report_data.vectorData[check.vector].checks_warn += check.state === 'warn'
+              })
+            })
+            for (const vectorName in report_data.vectorData) {
+              const vectorData = report_data.vectorData[vectorName]
+              vectorData.checks_total =
+                vectorData.checks_pass + vectorData.checks_fail + vectorData.checks_warn + vectorData.checks_skip
+            }
+          })
+          this.clusterData = report_data.clusterData || []
+          this.summaryData = report_data.summaryData || {}
+          this.vectorData = new Map(Object.entries(report_data.vectorData || {}))
+        })
+        .catch(console.error)
     }
   }
 }
