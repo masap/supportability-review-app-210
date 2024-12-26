@@ -40,10 +40,7 @@ export default class ReviewBundle extends SteveModel {
 
   viewReport() {
     const route = createRoute('report', {}, {})
-    const product = route.params.product
-    const cluster = route.params.cluster
-    const id = this.id
-    window.location.href = `/c/${cluster}/${product}/view-report/${id}/?bundlename=${this.metadata.name}`
+    window.location.href = `../${route.params.product}/view-report/${this.id}/?bundlename=${this.metadata.name}`
   }
 
   downloadFromUrl(url, filename) {
